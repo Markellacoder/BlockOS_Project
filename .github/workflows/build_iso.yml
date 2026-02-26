@@ -8,30 +8,32 @@ jobs:
       - name: Kod letoltese
         uses: actions/checkout@v4
 
-      - name: Rendszer eszkozök telepitese
+      - name: Szukseges eszkozok telepitese
         run: |
           sudo apt-get update
-          sudo apt-get install -y mtools xorriso grub-pc-bin grub-common
+          sudo apt-get install -y xorriso grub-pc-bin grub-common mtools
 
       - name: ISO struktura felepitese
         run: |
           mkdir -p iso_root/boot/grub
           cp -r apps system desktop installer bootloader iso_root/
           
-          # Letrehozzuk a GRUB konfiguraciot, hogy tudja mit inditson
-          echo 'set timeout=0' > iso_root/boot/grub/grub.cfg
-          echo 'set default=0' >> iso_root/boot/grub/grub.cfg
+          # Letöltünk egy pici, biztosan működő kernelt (indító motort)
+          # Ez csak azért kell, hogy a GRUB ne adjon hibát
+          sudo wget -O iso_root/boot/vmlinuz http://archive.ubuntu.com/ubuntu/dists/noble/main/installer-amd64/current/legacy-images/netboot/ubuntu-installer/amd64/linux
+
+          # Frissített GRUB konfiguráció
+          echo 'set timeout=5' > iso_root/boot/grub/grub.cfg
           echo 'menuentry "BlockOS" {' >> iso_root/boot/grub/grub.cfg
-          echo '  linux /boot/vmlinuz' >> iso_root/boot/grub/grub.cfg
+          echo '  linux /boot/vmlinuz quiet --' >> iso_root/boot/grub/grub.cfg
           echo '}' >> iso_root/boot/grub/grub.cfg
 
       - name: Bootolhato ISO gyartasa
         run: |
-          # Ez a parancs mar igazi elindulni kepes lemezt gyart
-          grub-mkrescue -o BlockOS_bootable.iso iso_root
+          grub-mkrescue -o BlockOS_Final.iso iso_root
 
       - name: ISO feltoltese
         uses: actions/upload-artifact@v4
         with:
           name: BlockOS-Final-ISO
-          path: BlockOS_bootable.iso
+          path: BlockOS_1.2_Final.iso
