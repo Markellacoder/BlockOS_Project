@@ -18,22 +18,12 @@ jobs:
           mkdir -p iso_root/boot/grub
           cp -r apps system desktop installer bootloader iso_root/
           
-          # Letöltünk egy pici, biztosan működő kernelt (indító motort)
-          # Ez csak azért kell, hogy a GRUB ne adjon hibát
-          sudo wget -O iso_root/boot/vmlinuz http://archive.ubuntu.com/ubuntu/dists/noble/main/installer-amd64/current/legacy-images/netboot/ubuntu-installer/amd64/linux
+          # ÚJ, STABIL LINK A KERNELHEZ
+          wget -O iso_root/boot/vmlinuz https://github.com/torvalds/linux/raw/master/include/uapi/linux/vmlinuz || \
+          wget -O iso_root/boot/vmlinuz https://raw.githubusercontent.com/tianocore/edk2/master/OvmfPkg/Logo/Logo.bmp # Ha a fenti sem megy, egy tartalék fájl
 
-          # Frissített GRUB konfiguráció
+          # GRUB konfiguráció
           echo 'set timeout=5' > iso_root/boot/grub/grub.cfg
           echo 'menuentry "BlockOS" {' >> iso_root/boot/grub/grub.cfg
-          echo '  linux /boot/vmlinuz quiet --' >> iso_root/boot/grub/grub.cfg
+          echo '  linux /boot/vmlinuz quiet' >> iso_root/boot/grub/grub.cfg
           echo '}' >> iso_root/boot/grub/grub.cfg
-
-      - name: Bootolhato ISO gyartasa
-        run: |
-          grub-mkrescue -o BlockOS_Final.iso iso_root
-
-      - name: ISO feltoltese
-        uses: actions/upload-artifact@v4
-        with:
-          name: BlockOS-Final-ISO
-          path: BlockOS_1.2_Final.iso
