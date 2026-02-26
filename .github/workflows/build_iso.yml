@@ -8,22 +8,30 @@ jobs:
       - name: Kod letoltese
         uses: actions/checkout@v4
 
-      - name: ISO gyarto eszkozok telepitese
+      - name: Rendszer eszkozök telepitese
         run: |
           sudo apt-get update
-          sudo apt-get install -y genisoimage syslinux
+          sudo apt-get install -y mtools xorriso grub-pc-bin grub-common
 
-      - name: Mappak ellenorzese
-        run: ls -R
-
-      - name: ISO keszitese
+      - name: ISO struktura felepitese
         run: |
-          mkdir -p output
-          cp -r apps system desktop installer bootloader output/
-          genisoimage -o BlockOS.iso -R -J -V "BLOCKOS" output/
+          mkdir -p iso_root/boot/grub
+          cp -r apps system desktop installer bootloader iso_root/
+          
+          # Letrehozzuk a GRUB konfiguraciot, hogy tudja mit inditson
+          echo 'set timeout=0' > iso_root/boot/grub/grub.cfg
+          echo 'set default=0' >> iso_root/boot/grub/grub.cfg
+          echo 'menuentry "BlockOS" {' >> iso_root/boot/grub/grub.cfg
+          echo '  linux /boot/vmlinuz' >> iso_root/boot/grub/grub.cfg
+          echo '}' >> iso_root/boot/grub/grub.cfg
+
+      - name: Bootolhato ISO gyartasa
+        run: |
+          # Ez a parancs mar igazi elindulni kepes lemezt gyart
+          grub-mkrescue -o BlockOS_bootable.iso iso_root
 
       - name: ISO feltoltese
         uses: actions/upload-artifact@v4
         with:
-          name: BlockOS-Ready-ISO
-          path: BlockOS.iso
+          name: BlockOS-Final-ISO
+          path: BlockOS_bootable.iso
