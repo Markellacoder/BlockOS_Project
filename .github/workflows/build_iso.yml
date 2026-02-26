@@ -1,0 +1,29 @@
+name: BlockOS ISO Generator
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kod letoltese
+        uses: actions/checkout@v4
+
+      - name: ISO gyarto eszkozok telepitese
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y genisoimage syslinux
+
+      - name: Mappak ellenorzese
+        run: ls -R
+
+      - name: ISO keszitese
+        run: |
+          mkdir -p output
+          cp -r apps system desktop installer bootloader output/
+          genisoimage -o BlockOS.iso -R -J -V "BLOCKOS" output/
+
+      - name: ISO feltoltese
+        uses: actions/upload-artifact@v4
+        with:
+          name: BlockOS-Ready-ISO
+          path: BlockOS.iso
