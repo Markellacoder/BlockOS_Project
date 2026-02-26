@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        :root { 
+            --blur: blur(35px);
+            --glass: rgba(15, 15, 15, 0.7);
+            --accent: #007aff;
+        }
+        
+        body { 
+            margin: 0; font-family: 'SF Pro', sans-serif; overflow: hidden; 
+            background: url('../../bootloader/splash.png') no-repeat center center; 
+            background-size: cover; height: 100vh;
+            color: white;
+        }
+
+        /* FELSŐ MENÜSÁV */
+        .top-bar {
+            position: fixed; top: 0; width: 100%; height: 35px;
+            display: flex; justify-content: space-between; align-items: center;
+            backdrop-filter: var(--blur); background: var(--glass);
+            padding: 0 20px; box-sizing: border-box; border-bottom: 0.5px solid rgba(255,255,255,0.1);
+            z-index: 1000; font-size: 13px;
+        }
+
+        /* ALSÓ LEBEGŐ DOCK */
+        .bottom-dock-container {
+            position: fixed; bottom: 15px; width: 100%;
+            display: flex; justify-content: center; z-index: 1000;
+        }
+
+        .bottom-dock {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 15px; border-radius: 22px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: var(--blur);
+            border: 0.5px solid rgba(255,255,255,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        .dock-icon {
+            width: 50px; height: 50px; cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+            border-radius: 12px;
+            filter: brightness(0.8) contrast(1.2); /* Sötétített ikonok */
+        }
+
+        .dock-icon:hover {
+            transform: scale(1.3) translateY(-10px);
+        }
+
+        /* START MENÜ ABLAK */
+        .start-menu {
+            position: absolute; top: 45px; left: 15px; width: 480px;
+            background: rgba(20, 20, 20, 0.95); backdrop-filter: var(--blur);
+            border-radius: 24px; border: 1px solid rgba(255,255,255,0.2);
+            display: none; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            z-index: 999;
+        }
+
+        .menu-split { display: flex; gap: 30px; }
+        .left-panel { width: 50%; border-right: 0.5px solid rgba(255,255,255,0.1); }
+        .right-panel { width: 50%; }
+
+        .sys-btn { 
+            display: flex; align-items: center; gap: 12px; padding: 12px;
+            cursor: pointer; border-radius: 12px; transition: 0.2s;
+        }
+        .sys-btn:hover { background: rgba(255,255,255,0.1); }
+        .sys-btn img { width: 22px; height: 22px; }
+
+        .section-title { font-size: 10px; font-weight: bold; opacity: 0.4; margin-bottom: 15px; letter-spacing: 1px; }
+        
+        .recent-app {
+            display: flex; align-items: center; gap: 12px; padding: 8px;
+            cursor: pointer; border-radius: 10px;
+        }
+        .recent-app:hover { background: rgba(255,255,255,0.05); }
+        .recent-app img { width: 28px; border-radius: 7px; }
+
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <div style="display:flex; align-items:center; gap:20px;">
+            <img src="https://img.icons8.com/fluency/48/mac-os.png" style="width:22px; cursor:pointer;" onclick="toggleStart()">
+            <b id="active-app">Finder</b>
+        </div>
+        <div id="clock">12:00</div>
+    </div>
+
+    <div class="start-menu" id="startMenu">
+        <div class="menu-split">
+            <div class="left-panel">
+                <div class="section-title" id="sys-title">RENDSZER</div>
+                <div id="system-buttons"></div>
+            </div>
+            <div class="right-panel">
+                <div class="section-title" id="recent-title">LEGUTÓBBI</div>
+                <div id="recent-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-dock-container">
+        <div class="bottom-dock" id="main-dock">
+            </div>
+    </div>
+
+    <script>
+        // Nyelvi beállítások (a telepítőből érkezik)
+        const userLang = "HU"; 
+        const dict = {
+            HU: { sys: "RENDSZER", rec: "LEGUTÓBBI", sleep: "Alvás", restart: "Újraindítás", shut: "Leállítás" },
+            EN: { sys: "SYSTEM", rec: "RECENT", sleep: "Sleep", restart: "Restart", shut: "Shut Down" }
+        };
+        const lang = dict[userLang];
+
+        // ÖSSZES ALKALMAZÁS AZ ALSÓ DOCKRA
+        const allApps = [
+            { id: "safari", name: "Safari", img: "https://img.icons8.com/fluency/48/safari.png" },
+            { id: "brave", name: "Brave", img: "https://img.icons8.com/color/48/brave-browser.png" },
+            { id: "finder", name: "Finder", img: "https://img.icons8.com/fluency/48/folder-invoices.png" },
+            { id: "word", name: "Word", img: "https://img.icons8.com/color/48/microsoft-word-2019.png" },
+            { id: "calc", name: "Calculator", img: "https://img.icons8.com/color/48/calculator.png" },
+            { id: "camera", name: "Camera", img: "https://img.icons8.com/fluency/48/video-call.png" },
+            { id: "photos", name: "Photos", img: "https://img.icons8.com/fluency/48/photos.png" },
+            { id: "media", name: "Media", img: "https://img.icons8.com/fluency/48/itunes.png" },
+            { id: "games", name: "Games", img: "https://img.icons8.com/fluency/48/controller.png" },
+            { id: "settings", name: "Settings", img: "https://img.icons8.com/fluency/48/settings.png" }
+        ];
+
+        const dockEl = document.getElementById('main-dock');
+        const recentEl = document.getElementById('recent-list');
+
+        // Ikonok generálása
+        allApps.forEach((app, index) => {
+            // Alsó Dock ikonok
+            dockEl.innerHTML += `<img src="${app.img}" class="dock-icon" onclick="launch('${app.id}', '${app.name}')" title="${app.name}">`;
+            
+            // Csak az első 3 kerül a "Recent" listába példaként
+            if(index < 3) {
+                recentEl.innerHTML += `
+                    <div class="recent-app" onclick="launch('${app.id}', '${app.name}')">
+                        <img src="${app.img}"> <span>${app.name}</span>
+                    </div>`;
+            }
+        });
+
+        // Start menü gombok
+        document.getElementById('system-buttons').innerHTML = `
+            <div class="sys-btn" onclick="action('sleep')"><img src="https://img.icons8.com/ios-filled/50/ffffff/moon.png"> <span>${lang.sleep}</span></div>
+            <div class="sys-btn" onclick="action('restart')"><img src="https://img.icons8.com/ios-filled/50/ffffff/restart.png"> <span>${lang.restart}</span></div>
+            <div class="sys-btn" onclick="action('shutdown')" style="color:#ff453a;"><img src="https://img.icons8.com/ios-filled/50/ff453a/shutdown.png"> <span>${lang.shut}</span></div>
+        `;
+
+        document.getElementById('sys-title').innerText = lang.sys;
+        document.getElementById('recent-title').innerText = lang.rec;
+
+        function toggleStart() {
+            const m = document.getElementById('startMenu');
+            m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
+        }
+
+        function launch(id, name) {
+            document.getElementById('active-app').innerText = name;
+            console.log("Launching: " + id);
+            // Itt hívja meg a Python dock_engine-t
+        }
+
+        function action(type) {
+            alert("Rendszer művelet: " + type);
+        }
+
+        // Óra
+        setInterval(() => {
+            document.getElementById('clock').innerHTML = new Date().toLocaleTimeString('hu-HU', {hour:'2-digit', minute:'2-digit'});
+        }, 1000);
+    </script>
+</body>
+</html>

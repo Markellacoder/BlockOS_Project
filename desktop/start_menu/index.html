@@ -1,0 +1,35 @@
+<div class="tahoe-start-menu">
+    <div class="search-bar">
+        <input type="text" placeholder="Keresés az appok között...">
+    </div>
+    
+    <div class="app-grid">
+        <div class="app-item" onclick="launch('Brave')">
+            <img src="../../assets/brave_icon.png">
+            <span>Brave</span>
+        </div>
+        <div class="app-item" onclick="launch('Word')">
+            <img src="../../assets/word_icon.png">
+            <span>Word</span>
+        </div>
+    </div>
+
+    <div class="user-section">
+        <img src="../../assets/avatar.png" class="mini-avatar">
+        <span class="user-name">Markella Balázs</span>
+        <button class="shutdown-btn" onclick="shutdown()">⏻</button>
+    </div>
+</div>
+
+<style>
+    .tahoe-start-menu {
+        width: 350px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(30px) saturate(150%);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 20px;
+        color: white;
+    }
+    .shutdown-btn { background: none; border: none; color: red; font-size: 20px; cursor: pointer; }
+</style>

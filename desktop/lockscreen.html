@@ -1,0 +1,32 @@
+<div class="login-area">
+    <div class="avatar"></div>
+    <div id="user-display-name" style="font-size: 20px; margin-bottom: 15px; font-weight: bold;">Betöltés...</div>
+    
+    <input type="password" id="pin-input" placeholder="PIN kód">
+    <button onclick="checkPassword()">Belépés</button>
+    <p id="error-msg" style="color: #ff453a; font-size: 12px; margin-top: 10px; display: none;">Hibás jelszó!</p>
+</div>
+
+<script>
+    // Ez a függvény kéri le az adatokat a telepítő által mentett settings.json-ból
+    async function loadUserData() {
+        // A rendszer (Python híd) adja át az adatokat
+        const response = await fetch('/get-system-settings'); 
+        const settings = await response.json();
+        
+        document.getElementById('user-display-name').innerText = settings.user;
+        window.correctPassword = settings.password || "1234"; // Alapértelmezett, ha nem adott meg
+    }
+
+    function checkPassword() {
+        const input = document.getElementById('pin-input').value;
+        if (input === window.correctPassword) {
+            alert("Sikeres belépés!");
+            window.location.href = "dock/index.html";
+        } else {
+            document.getElementById('error-msg').style.display = "block";
+        }
+    }
+    
+    loadUserData();
+</script>

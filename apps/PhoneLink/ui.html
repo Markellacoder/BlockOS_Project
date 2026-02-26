@@ -1,0 +1,45 @@
+<div class="phonelink-container">
+    <div class="phone-frame">
+        <div class="phone-screen">
+            <div class="status-bar">19:24 📶🔋</div>
+            <div class="app-icons">
+                <div class="icon">💬</div>
+                <div class="icon">📞</div>
+                <div class="icon">📸</div>
+            </div>
+            <p>Távvezérlés Aktív</p>
+        </div>
+    </div>
+    <div class="control-panel">
+        <h3>Eszköz: Samsung Galaxy A 17</h3>
+        <button onclick="alert('Hívás indítása...')">Hívás</button>
+        <button onclick="alert('Üzenetek szinkronizálása...')">Üzenetek</button>
+        <button class="disconnect" onclick="location.reload()">Lecsatlakozás</button>
+    </div>
+</div>
+
+<style>
+    .phonelink-container {
+        display: flex; gap: 30px; padding: 20px;
+        background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(25px);
+        border-radius: 20px; border: 1px solid rgba(255,255,255,0.2);
+        color: white; font-family: 'SF Pro', sans-serif;
+    }
+    .phone-frame {
+        width: 200px; height: 400px; background: #000;
+        border: 8px solid #333; border-radius: 30px; overflow: hidden;
+    }
+    .phone-screen {
+        height: 100%; display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        background: linear-gradient(to bottom, #1a1a1a, #000);
+    }
+    .status-bar { font-size: 10px; margin-top: 5px; }
+    .app-icons { display: flex; gap: 10px; margin-top: 20px; }
+    .control-panel button {
+        display: block; width: 100%; margin-top: 10px;
+        padding: 10px; border-radius: 10px; border: none;
+        background: rgba(255,255,255,0.2); color: white; cursor: pointer;
+    }
+    .disconnect { background: rgba(255, 0, 0, 0.4) !important; }
+</style>

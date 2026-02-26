@@ -1,0 +1,62 @@
+<div class="finder-window">
+    <div class="finder-header">
+        <div class="window-controls">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+        </div>
+        <div class="finder-title">BlockFinder — Dokumentumok</div>
+    </div>
+
+    <div class="finder-body">
+        <div class="sidebar">
+            <p>Kedvencek</p>
+            <ul>
+                <li>🏠 Asztal</li>
+                <li>📂 Dokumentumok</li>
+                <li>⬇️ Letöltések</li>
+                <li>☁️ iCloud (BlockOS Cloud)</li>
+            </ul>
+            <p>Meghajtók</p>
+            <ul>
+                <li>💽 Rendszer (C:)</li>
+                <li>💾 Adatok (D:)</li>
+            </ul>
+        </div>
+
+        <div class="file-grid">
+            <div class="item" onclick="launch('Brave.exe')">
+                <img src="../../assets/brave_icon.png">
+                <span>Brave.exe</span>
+            </div>
+            <div class="item">
+                <img src="../../assets/word_icon.png">
+                <span>Projekt.docx</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .finder-window {
+        width: 800px; height: 500px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(30px) saturate(160%);
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        display: flex; flex-direction: column;
+        color: white; font-family: 'Segoe UI', sans-serif;
+    }
+    .finder-header { height: 40px; display: flex; align-items: center; padding: 0 15px; background: rgba(255,255,255,0.05); }
+    .window-controls { display: flex; gap: 8px; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .red { background: #FF5F56; } .yellow { background: #FFBD2E; } .green { background: #27C93F; }
+    .finder-body { display: flex; flex: 1; }
+    .sidebar { width: 200px; background: rgba(255,255,255,0.05); padding: 20px; border-right: 1px solid rgba(255,255,255,0.1); }
+    .sidebar ul { list-style: none; padding: 0; }
+    .sidebar li { padding: 8px; border-radius: 5px; cursor: pointer; }
+    .sidebar li:hover { background: rgba(255,255,255,0.1); }
+    .file-grid { flex: 1; padding: 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    .item { text-align: center; cursor: pointer; }
+    .item img { width: 50px; display: block; margin: 0 auto 5px; }
+</style>

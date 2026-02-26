@@ -1,0 +1,23 @@
+<div class="login-container">
+    <div class="top-bar">
+        <span class="tahoe-time" id="clock">12:00</span>
+    </div>
+    
+    <div class="avatar-section">
+        <div class="user-avatar" style="background-image: url('../../assets/user_avatar.png');"></div>
+        <h2 class="user-name">Felhasználó</h2>
+    </div>
+
+    <div class="password-box">
+        <input type="password" id="pass-input" placeholder="Jelszó megadása...">
+        <button onclick="login()">→</button>
+    </div>
+</div>
+
+<style>
+    body { background: black; font-family: 'SF Pro', sans-serif; color: white; }
+    .login-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+    .tahoe-time { position: absolute; top: 20px; font-size: 24px; font-weight: 200; }
+    .user-avatar { width: 150px; height: 150px; border-radius: 50%; border: 2px solid white; margin-bottom: 20px; }
+    .password-box input { background: rgba(255,255,255,0.1); border: none; padding: 10px; border-radius: 20px; color: white; text-align: center; backdrop-filter: blur(10px); }
+</style>
