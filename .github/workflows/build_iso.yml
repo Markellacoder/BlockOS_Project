@@ -8,7 +8,7 @@ jobs:
       - name: Kod letoltese
         uses: actions/checkout@v4
 
-      - name: Szukseges eszkozok telepitese
+      - name: Rendszer eszkozok telepitese
         run: |
           sudo apt-get update
           sudo apt-get install -y xorriso grub-pc-bin grub-common mtools
@@ -18,12 +18,23 @@ jobs:
           mkdir -p iso_root/boot/grub
           cp -r apps system desktop installer bootloader iso_root/
           
-          # ÚJ, STABIL LINK A KERNELHEZ
-          wget -O iso_root/boot/vmlinuz https://github.com/torvalds/linux/raw/master/include/uapi/linux/vmlinuz || \
-          wget -O iso_root/boot/vmlinuz https://raw.githubusercontent.com/tianocore/edk2/master/OvmfPkg/Logo/Logo.bmp # Ha a fenti sem megy, egy tartalék fájl
+          # A BIZTOS MEGOLDÁS: Kimásoljuk a GitHub szerver saját kernelét
+          # Ez a fájl biztosan ott van és biztosan működik
+          cp /boot/vmlinuz-$(uname -r) iso_root/boot/vmlinuz
 
-          # GRUB konfiguráció
+          # GRUB konfiguráció javítása
           echo 'set timeout=5' > iso_root/boot/grub/grub.cfg
           echo 'menuentry "BlockOS" {' >> iso_root/boot/grub/grub.cfg
-          echo '  linux /boot/vmlinuz quiet' >> iso_root/boot/grub/grub.cfg
+          echo '  linux /boot/vmlinuz root=/dev/sr0 quiet' >> iso_root/boot/grub/grub.cfg
+          echo '  initrd /boot/vmlinuz' # Tartalék megoldásként
           echo '}' >> iso_root/boot/grub/grub.cfg
+
+      - name: Bootolhato ISO gyartasa
+        run: |
+          grub-mkrescue -o BlockOS_Final.iso iso_root
+
+      - name: ISO feltoltese
+        uses: actions/upload-artifact@v4
+        with:
+          name: BlockOS-Final-ISO
+          path: BlockOS_Final.iso
